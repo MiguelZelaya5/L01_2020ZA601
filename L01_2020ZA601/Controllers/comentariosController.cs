@@ -2,16 +2,15 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace L01_2020ZA601.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class calificacionesController : ControllerBase
+    public class comentariosController : ControllerBase
     {
         private readonly blogDbContext _blogDbContexto;
-        public calificacionesController(blogDbContext blogDbContexto)
+        public comentariosController(blogDbContext blogDbContexto)
         {
             _blogDbContexto = blogDbContexto;
         }
@@ -19,8 +18,8 @@ namespace L01_2020ZA601.Controllers
         [Route("GetAll")]
         public IActionResult Get()
         {
-            List<calificaciones> listadoEquipo = (from e in _blogDbContexto.calificaciones
-                                            select e).ToList();
+            List<comentarios> listadoEquipo = (from e in _blogDbContexto.comentarios
+                                                  select e).ToList();
 
             if (listadoEquipo.Count == 0)
             {
@@ -37,22 +36,28 @@ namespace L01_2020ZA601.Controllers
         [Route("GetById/{id}")]
         public IActionResult Get(int id)
         {
-            calificaciones? equipo = (from e in _blogDbContexto.calificaciones
-                                where e.calificacionId == id
-                                select e).FirstOrDefault();
+            comentarios? equipo = (from e in _blogDbContexto.comentarios
+                                      where e.cometarioId == id
+                                      select e).FirstOrDefault();
             if (equipo == null)
             {
                 return NotFound();
             }
             return Ok(equipo);
         }
+        /// <summary>
+        /// Mostrar la lista de comentarios en base al id del usuario
+        /// </summary>
+        /// <param name="publicacion"></param>
+        /// <returns></returns>
         [HttpGet]
-        [Route("Find/{publicacion}")]
-        public IActionResult FindNombre(int publicacion)
+        [Route("Find/{idusuario}")]
+        public IActionResult FindNombre(int idusuario)
         {
-            List<calificaciones> listadoEquipo = (from e in _blogDbContexto.calificaciones
-                                                  where e.publicacionId== publicacion
-                                                  select e).ToList();
+            List<comentarios> listadoEquipo = (from e in _blogDbContexto.comentarios
+                                               where e.usuarioId== idusuario
+                                               select e).ToList();
+            
             if (listadoEquipo == null)
             {
                 return NotFound();
@@ -62,13 +67,13 @@ namespace L01_2020ZA601.Controllers
 
         [HttpPost]
         [Route("Add")]
-        public IActionResult GuardadEquipo([FromBody] calificaciones calificacione)
+        public IActionResult GuardadEquipo([FromBody] comentarios comentario)
         {
             try
             {
-                _blogDbContexto.calificaciones.Add(calificacione);
+                _blogDbContexto.comentarios.Add(comentario);
                 _blogDbContexto.SaveChanges();
-                return Ok(calificacione);
+                return Ok(comentario);
             }
             catch (Exception ex)
             {
@@ -77,24 +82,24 @@ namespace L01_2020ZA601.Controllers
         }
         [HttpPut]
         [Route("actualizar/{id}")]
-        public IActionResult ActualizarEquipo(int id, [FromBody] calificaciones equipoModificar)
+        public IActionResult ActualizarEquipo(int id, [FromBody] comentarios equipoModificar)
         {
             ///Para actualizar un registro,se pbtiene el regitro original de la base de datos
             ///al cual alteraremos algunas propiedades
-            calificaciones? equipoActual = (from e in _blogDbContexto.calificaciones
-                                      where e.calificacionId == id
-                                      select e).FirstOrDefault();
+            comentarios? equipoActual = (from e in _blogDbContexto.comentarios
+                                            where e.cometarioId == id
+                                            select e).FirstOrDefault();
             ///Verifivamos si existe en base el id
             if (equipoActual == null)
             {
                 return NotFound();
             }
             ///Si se encuentran registros, se alteran los campos modificables.
-            equipoActual.calificacionId= equipoModificar.calificacionId;
+            equipoActual.cometarioId = equipoModificar.cometarioId;
             equipoActual.publicacionId = equipoModificar.publicacionId;
             equipoActual.usuarioId = equipoModificar.usuarioId;
-            equipoActual.calificacionId = equipoModificar.calificacionId;
-            
+            equipoActual.comentario = equipoModificar.comentario;
+
 
             ///se Marca el registro como modificado en el contexto
             ///y se envia la modificacion a la base
@@ -108,16 +113,16 @@ namespace L01_2020ZA601.Controllers
         [Route("eliminar/{id}")]
         public IActionResult EliminarEquipo(int id)
         {
-            calificaciones? equipo = (from e in _blogDbContexto.calificaciones
-                                where e.calificacionId == id
-                                select e).FirstOrDefault();
+            comentarios? equipo = (from e in _blogDbContexto.comentarios
+                                      where e.cometarioId == id
+                                      select e).FirstOrDefault();
 
             if (equipo == null)
             {
                 return NotFound();
             }
-            _blogDbContexto.calificaciones.Attach(equipo);
-            _blogDbContexto.calificaciones.Remove(equipo);
+            _blogDbContexto.comentarios.Attach(equipo);
+            _blogDbContexto.comentarios.Remove(equipo);
             _blogDbContexto.SaveChanges();
             return Ok(equipo);
         }

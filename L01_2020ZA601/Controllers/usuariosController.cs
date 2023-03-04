@@ -45,12 +45,18 @@ namespace L01_2020ZA601.Controllers
             }
             return Ok(equipo);
         }
+        /// <summary>
+        /// Busca por nombre y apellido
+        /// </summary>
+        /// <param name="nombre"></param>
+        /// <param name="apellido"></param>
+        /// <returns></returns>
         [HttpGet]
-        [Route("Find/{nombre}")]
-        public IActionResult FindNombre(string nombre)
+        [Route("Find/{nombre}/{apellido}")]
+        public IActionResult FindNombre(string nombre, string apellido)
         {
             usuarios? equipo = (from e in _blogDbContexto.usuarios
-                               where e.nombre.Contains(nombre)
+                               where e.nombre.Contains(nombre) && e.apellido.Contains(apellido)
                                select e).FirstOrDefault();
             if (equipo == null)
             {
@@ -58,7 +64,26 @@ namespace L01_2020ZA601.Controllers
             }
             return Ok(equipo);
         }
-        
+        /// <summary>
+        /// Buscar por rol
+        /// </summary>
+        /// <param name="nombre"></param>
+        /// <param name="apellido"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("Find/{rol}")]
+        public IActionResult FindRol(int rol)
+        {
+            usuarios? equipo = (from e in _blogDbContexto.usuarios
+                                where e.rolId == rol
+                                select e).FirstOrDefault();
+            if (equipo == null)
+            {
+                return NotFound();
+            }
+            return Ok(equipo);
+        }
+
         [HttpPost]
         [Route("Add")]
         public IActionResult GuardadEquipo([FromBody] usuarios usuario)
